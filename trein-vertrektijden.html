@@ -1,0 +1,115 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<link rel="import" href="trein-row.html">
+<!--
+An element that displays train departure times at a certain station for the Dutch railway
+
+Example:
+
+    <trein-vertrektijden station="Amsterdam"></websocket-component>
+
+@element trein-vertrektijden
+@demo demo/index.html
+-->
+
+<dom-module id="trein-vertrektijden">
+	<template>
+		<iron-ajax id="ajax"
+			auto
+			url="{{url}}"
+			params="{{_params}}"
+			handle-as="document"
+			last-response="{{response}}"
+			verbose
+			on-response="handleResponse"></iron-ajax>
+			<template is="dom-repeat" items="{{response.ActueleVertrekTijden.VertrekkendeTrein}}">
+				<trein-row item={{item}} index="{{index}}"></trein-row>
+			</template>
+	</template>
+	<script>
+		Polymer({
+			is: "trein-vertrektijden",
+			properties: {
+				station: {
+					type: String,
+					value: "Amsterdam",
+				},
+				url: {
+					type: String,
+					value: "check https://gist.github.com/wburgers/a283fd3eca76a5d1f727b1d0ffc04133 if you need a proxy",
+				},
+				_params: {
+					type: Object,
+					computed: '_computeParams(station)'
+				}
+			},
+			handleResponse: function() {
+				this.response = xmlToJson(this.response);
+				this._updateData();
+				console.log(this.response);
+			},
+			_updateData: function() {
+				this.async(function() {
+					//this.$.ajax.generateRequest();
+			    }, 15000);
+			},
+			_computeParams: function(station) {
+				return {
+					"station": station
+				}
+			}
+		});
+		function xmlToJson(xml) {
+			// Create the return object
+			var obj = {};
+			if (xml.nodeType == 1) { // element
+				// do attributes
+				if (xml.attributes.length > 0) {
+					for (var j = 0; j < xml.attributes.length; j++) {
+						var attribute = xml.attributes.item(j);
+						obj['@' + attribute.nodeName] = attribute.nodeValue;
+					}
+				}
+			} else if (xml.nodeType == 3) { // text
+				obj = xml.nodeValue.trim(); // add trim here
+			}
+
+			// do children
+			if (xml.hasChildNodes()) {
+				for (var i = 0; i < xml.childNodes.length; i++) {
+					var item = xml.childNodes.item(i);
+					var nodeName = item.nodeName;
+					if (typeof(obj[nodeName]) == "undefined") {
+						var tmp = xmlToJson(item);
+						if (tmp !== "") {
+							// if not empty string
+							obj[nodeName] = tmp;
+						}
+					} else {
+						if (typeof(obj[nodeName].push) == "undefined") {
+							var old = obj[nodeName];
+							obj[nodeName] = [];
+							obj[nodeName].push(old);
+						}
+						var tmp = xmlToJson(item);
+						if (tmp !== "") {
+							// if not empty string
+							obj[nodeName].push(tmp);
+						}
+					}
+				}
+			}
+			if (!Array.isArray(obj) && typeof obj == 'object') {
+				var keys = Object.keys(obj);
+				if (keys.length == 1 && keys[0] == '#text') {
+					return obj['#text'];
+				}
+				if (keys.length === 0) {
+					return null;
+				}
+			}
+			return obj;
+		}
+	</script>
+</dom-module>

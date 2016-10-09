@@ -1,0 +1,24 @@
+{
+  "name": "trein-vertrektijden",
+  "version": "0.0.1",
+  "homepage": "https://github.com/wburgers/trein-vertrektijden",
+  "description": "An element that displays train departure times at a certain station for the Dutch railway",
+  "main": "trein-vertrektijden.html",
+  "authors": [
+    "Willem Burgers"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.0",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}

@@ -1,0 +1,62 @@
+<link rel="import" href="../polymer/polymer.html">
+<!--
+An element that displays a single train departure time
+
+Example:
+
+    <trein-row item={{item}}></websocket-row>
+
+@element trein-row
+-->
+
+<dom-module id="trein-row">
+	<template>
+		<style>
+			div: {
+				display: block;
+			}
+			.odd {
+				background-color: black;
+				color: white;
+			}
+			.changedTrack: {}
+		</style>
+		<div class$="{{_oddEvenClass(index)}}">
+			<span>{{_computeVertrektijd(item.VertrekTijd)}}</span>
+			<span>{{item.EindBestemming}}</span>
+			<span class$="{{_changedTrack(item.VertrekSpoor)}}">{{_computeVertrekspoor(item.VertrekSpoor)}}</span>
+			<span>{{item.TreinSoort}}</span>
+			<template is="dom-if" if={{typeof item.VertrekVertragingTekst !== "undefined"}}>
+				<span>{{item.VertrekVertragingTekst}}</span>
+			</template>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: "trein-row",
+			properties: {
+				item: {
+					type: Object
+				},
+				index: {
+					type: Number
+				}
+			},
+			_computeVertrektijd: function(dateTimeString) {
+				return new Date(dateTimeString).toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+			},
+			_computeVertrekspoor: function(trackobject) {
+				return trackobject["#text"];
+			},
+			_changedTrack: function(trackobject) {
+				if(trackobject["@wijziging"]){
+					return "changedTrack";
+				}
+				return "";
+			},
+			_oddEvenClass: function(index) {
+				return index % 2 == 0 ? "even" : "odd";
+			}
+		});
+	</script>
+</dom-module>
