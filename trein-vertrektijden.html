@@ -20,10 +20,10 @@ Example:
 			url="{{url}}"
 			params="{{_params}}"
 			handle-as="document"
-			last-response="{{response}}"
+			last-response="{{_response}}"
 			verbose
 			on-response="handleResponse"></iron-ajax>
-			<template is="dom-repeat" items="{{response.ActueleVertrekTijden.VertrekkendeTrein}}">
+			<template is="dom-repeat" items="{{_response.ActueleVertrekTijden.VertrekkendeTrein}}">
 				<trein-row item={{item}} index="{{index}}"></trein-row>
 			</template>
 	</template>
@@ -42,12 +42,15 @@ Example:
 				_params: {
 					type: Object,
 					computed: '_computeParams(station)'
+				},
+				_response: {
+					type: Object
 				}
 			},
 			handleResponse: function() {
-				this.response = xmlToJson(this.response);
+				this._response = xmlToJson(this._response);
 				this._updateData();
-				console.log(this.response);
+				console.log(this._response);
 			},
 			_updateData: function() {
 				this.async(function() {
