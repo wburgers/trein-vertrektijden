@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-list/iron-list.html">
 
 <link rel="import" href="trein-row.html">
 <!--
@@ -7,7 +8,7 @@ An element that displays train departure times at a certain station for the Dutc
 
 Example:
 
-    <trein-vertrektijden station="Amsterdam"></websocket-component>
+    <trein-vertrektijden station="Amsterdam"></trein-vertrektijden>
 
 @element trein-vertrektijden
 @demo demo/index.html
@@ -15,17 +16,31 @@ Example:
 
 <dom-module id="trein-vertrektijden">
 	<template>
+		<style>
+			:host {
+				display: block;
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+
+			iron-list {
+				flex: 1 1 auto;
+			}
+		</style>
 		<iron-ajax id="ajax"
 			auto
-			url="{{url}}"
-			params="{{_params}}"
+			url="[[url]]"
+			params="[[_params]]"
 			handle-as="document"
 			last-response="{{_response}}"
 			verbose
-			on-response="handleResponse"></iron-ajax>
-			<template is="dom-repeat" items="{{_response.ActueleVertrekTijden.VertrekkendeTrein}}">
-				<trein-row item={{item}} index="{{index}}"></trein-row>
-			</template>
+			on-response="_handleResponse"></iron-ajax>
+			<iron-list items=[[_response.ActueleVertrekTijden.VertrekkendeTrein]]>
+				<template>
+					<trein-row item={{item}} index="{{index}}"></trein-row>
+				</template>
+			</iron-list>
 	</template>
 	<script>
 		Polymer({
@@ -47,14 +62,14 @@ Example:
 					type: Object
 				}
 			},
-			handleResponse: function() {
+			_handleResponse: function() {
 				this._response = xmlToJson(this._response);
 				this._updateData();
 				console.log(this._response);
 			},
 			_updateData: function() {
 				this.async(function() {
-					//this.$.ajax.generateRequest();
+					this.$.ajax.generateRequest();
 			    }, 15000);
 			},
 			_computeParams: function(station) {
